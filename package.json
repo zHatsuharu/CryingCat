@@ -1,0 +1,20 @@
+{
+  "name": "cryingcat",
+  "version": "1.0.0",
+  "description": "crying",
+  "main": "run.js",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "author": "Gaby",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^0.5.0",
+    "discord.js": "^13.8.1",
+    "generate-unique-id": "^2.0.1",
+    "genshin-db": "^4.3.1",
+    "puppeteer": "^15.5.0",
+    "request": "^2.88.2",
+    "sqlite3": "^5.0.8"
+  }
+}

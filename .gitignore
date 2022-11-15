@@ -1,0 +1,5 @@
+config.json
+images/
+node_modules/
+data/database.sqlite3
+exemple.js
