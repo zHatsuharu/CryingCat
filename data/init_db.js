@@ -18,10 +18,19 @@ query += ")";
 
 db.run(query);
 
-query = `CREATE TABLE IF NOT EXISTS twitch (
+query = `CREATE TABLE IF NOT EXISTS twitchServers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     serverID VARCHAR(255),
     channelID VARCHAR(255),
+    streamerId VARCHAR(255),
+    viewerId VARCHAR(255)
+)`;
+
+db.run(query);
+
+query = `CREATE TABLE IF NOT EXISTS twitchNotifs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    serverID VARCHAR(255),
     url TEXT,
     message TEXT
 )`;

@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, Colors } = require("discord.js");
 const { get, insert } = require("../sqlite");
 const puppeteer = require("puppeteer");
 
@@ -21,7 +20,7 @@ async function validUid(uid) {
 }
 
 function makeEmbed(message, color) {
-	const embed = new MessageEmbed()
+	const embed = new EmbedBuilder()
 		.setColor(color)
 		.setDescription(message);
 	return embed;
@@ -42,19 +41,19 @@ module.exports = {
 		await interaction.deferReply();
 		let isLinked = await get("dcUID", "enka", "dcUID", interaction.user.id);
 		if (isLinked) {
-			return await interaction.editReply({ embeds: [makeEmbed("Ton compte est déjà lié à un UID.", "RED")] });
+			return await interaction.editReply({ embeds: [makeEmbed("Ton compte est déjà lié à un UID.", Colors.Red)] });
 		}
 		isLinked = await get("giUID", "enka", "giUID", uid);
 		if (isLinked) {
-			return await interaction.editReply({ embeds: [makeEmbed("Cet UID est déjà lié à un compte.", "RED")] });
+			return await interaction.editReply({ embeds: [makeEmbed("Cet UID est déjà lié à un compte.", Colors.Red)] });
 		}
 
 		if (!await validUid(uid)) {
-			return await interaction.editReply({ embeds: [makeEmbed("L'uid n'est pas valide.", "RED")] });
+			return await interaction.editReply({ embeds: [makeEmbed("L'uid n'est pas valide.", Colors.Red)] });
 		}
 
 		insert("enka", "dcUID, giUID", `${interaction.user.id}, ${uid}`);
 
-		await interaction.editReply({ embeds: [makeEmbed(`Votre compte Discord a été lié à cet uid : ${uid}`, "GREEN")] });
+		await interaction.editReply({ embeds: [makeEmbed(`Votre compte Discord a été lié à cet uid : ${uid}`, Colors.Green)] });
 	}
 };

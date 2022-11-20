@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, Colors } = require("discord.js");
 const genshindb = require("genshin-db");
 const request = require("request");
 const { get, update } = require("../sqlite");
@@ -60,7 +59,7 @@ async function isImageNsfw(url) {
 }
 
 function makeEmbed(message, color) {
-	const embed = new MessageEmbed()
+	const embed = new EmbedBuilder()
 		.setColor(color)
 		.setDescription(message);
 	return embed;
@@ -93,7 +92,7 @@ module.exports = {
 		await interaction.deferReply();
 
 		if (!await get("giUID", "enka", "dcUID", interaction.user.id)) {
-			return interaction.editReply({ embeds: [makeEmbed("Vous n'avez pas relier votre compte discord à un uid Genshin.\nUtilise la commande `/link`", "RED")] });
+			return interaction.editReply({ embeds: [makeEmbed("Vous n'avez pas relier votre compte discord à un uid Genshin.\nUtilise la commande `/link`", Colors.Red)] });
 		}
 
 		const charName = genshindb.characters(character, {
@@ -102,18 +101,18 @@ module.exports = {
 		}).name;
 
 		if (!charName) {
-			return interaction.editReply({ embeds: [makeEmbed("Le nom du personnage est invalide.\nPrenez compte que les voyageurs sont nommés : Aether / Lumine", "RED")] });
+			return interaction.editReply({ embeds: [makeEmbed("Le nom du personnage est invalide.\nPrenez compte que les voyageurs sont nommés : Aether / Lumine", Colors.Red)] });
 		}
 
 		imgURL = imgURL.match(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)(\.jpg|.png)/i);
 
 		if (!imgURL || !await urlIsIMG(imgURL[0])) {
-			return interaction.editReply({ embeds: [makeEmbed("L'url est invalide.", "RED")] });
+			return interaction.editReply({ embeds: [makeEmbed("L'url est invalide.", Colors.Red)] });
 		}
 
 		if (/*!force && */await isImageNsfw(imgURL[0])) {
 			return interaction.editReply({ embeds: [
-				makeEmbed("L'image est déclaré comme NSFW.\nVeuillez utiliser une autre image.\n\n**N**ot **S**afe **F**or **W**ork", "RED")
+				makeEmbed("L'image est déclaré comme NSFW.\nVeuillez utiliser une autre image.\n\n**N**ot **S**afe **F**or **W**ork", Colors.Red)
 				.setFooter({ text: "Une future mise à jour permettra de rajouter une vérification manuelle sur l'image en cas de problème." })
 			] });
 		}
@@ -124,6 +123,6 @@ module.exports = {
 			, imgURL[0], "dcUID", interaction.user.id
 		);
 
-		interaction.editReply({ embeds: [makeEmbed(`L'image a bien été liée pour **${charName}** !`, "GREEN")] });
+		interaction.editReply({ embeds: [makeEmbed(`L'image a bien été liée pour **${charName}** !`, Colors.Green)] });
 	}
 }

@@ -1,5 +1,5 @@
-const { Client, Intents, GuildMember, Collection } = require("discord.js");
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_INTEGRATIONS] });
+const { Client, GatewayIntentBits, GuildMember, Collection } = require("discord.js");
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildIntegrations] });
 const { token, chanTab, msgTab, roleTab, banCards, banMuda } = require("./config.json");
 const fs = require('node:fs');
 const path = require('node:path');

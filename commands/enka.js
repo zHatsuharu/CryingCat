@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MessageEmbed, MessageAttachment, MessageActionRow, MessageButton } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, Colors, ButtonStyle } = require("discord.js");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const https = require("https");
@@ -29,48 +28,57 @@ const typeObject = {
 const emote = "<a:loading:985185838432399360>";
 
 function embedLoader(status, message, times) {
-	const embed = new MessageEmbed()
-		.addField("** **", `
+	const embed = new EmbedBuilder()
+		.addFields(
+			[
+				{ name: '\u200b', value: `
 - Vérification UID
 - Disponniblités des infos
 - Personnage dans la vitrine
 - Obtention des infos
-		`, true)
-		.addField("** **", `
+		`, inline: true },
+				{ name: '\u200b', value: `
 ${status <= 0 ? emote : "✅"}
 ${status == 1 ? emote : status < 1 ? "⬛" : "✅"}
 ${status == 2 ? emote : status < 2 ? "⬛" : "✅"}
 ${status == 3 ? emote : status < 3 ? "⬛" : "✅"}
-		`, true)
-		.addField("** **", times[0] ? `${times[0]}\n${times[1]}\n${times[2]}\n${times[3]}` : "** **", true)
-		.setColor("GREY")
+		`, inline: true },
+				{ name: '\u200b', value: times[0] ? `${times[0]}\n${times[1]}\n${times[2]}\n${times[3]}` : '\u200b', inline: true }
+			]
+		)
+		.setColor(Colors.Grey)
 		.setFooter({ text: "Enka.Network", iconURL: "https://enka.shinshin.moe/favicon.png" });
 
 	if (message)
-		embed.addField("** **", message, false).addField("** **", "** **", false);
+		embed.addFields([{name: '\u200b', value: message, inline: false}, {name: '\u200b', value: '\u200b', inline: false}]);
 	else
-		embed.addField("** **", "** **", false);
+		embed.addFields([{name: '\u200b', value: '\u200b', inline: false}]);
 
 	return embed;
 }
 
 function embedErr(status, times) {
-	const embed = new MessageEmbed()
-		.addField("** **", `
+	const embed = new EmbedBuilder()
+		.addFields(
+			[
+				{ name: '\u200b', value: `
 - Vérification UID
 - Disponniblités des infos
 - Personnage dans la vitrine
 - Obtention des infos
-		`, true)
-		.addField("** **", `
+		`, inline: true
+				},
+				{ name: '\u200b', value: `
 ${status == 0 ? "❌" : "✅"}
 ${status == 1 ? "❌" : status < 1 ? "⬛" : "✅"}
 ${status == 2 ? "❌" : status < 2 ? "⬛" : "✅"}
 ${status == 3 ? "❌" : status < 3 ? "⬛" : "✅"}
-		`, true)
-		.addField("** **", times[0] ? `${times[0]}\n${times[1]}\n${times[2]}\n${times[3]}` : "** **", true)
-		.addField("** **", "** **", false)
-		.setColor("RED")
+		`, inline: true },
+				{name: '\u200b', value: times[0] ? `${times[0]}\n${times[1]}\n${times[2]}\n${times[3]}` : '\u200b', inline: true},
+				{name: '\u200b', value: '\u200b', inline: false}
+			]
+		)
+		.setColor(Colors.Red)
 		.setFooter({ text: "Enka.Network", iconURL: "https://enka.shinshin.moe/favicon.png" });
 
 	if (status == 0) {
@@ -132,9 +140,9 @@ async function getInfo(uid, interaction) {
 	let times = ["", "", "", ""];
 	await interaction.editReply({
 		embeds: [
-			new MessageEmbed()
+			new EmbedBuilder()
 				.setDescription("Chargement de la commande " + emote)
-				.setColor("GREY")
+				.setColor(Colors.Grey)
 		]
 	});
 	const start = Date.now();
@@ -211,6 +219,7 @@ async function getInfo(uid, interaction) {
 			await button.click();
 			await page.waitForFunction('document.querySelector(\'div[class^="DraggableCanvas"][class$="loader"]\') === null');
 			charName = await page.evaluate('document.querySelector(\'div[class^="name"]\').innerText');
+			console.log(charName.match(/^(\w|\s(?:\w))+/i)[0]);
 			charName = genshindb.characters(charName.match(/^(\w|\s(?:\w))+/i)[0], { queryLanguages: [genshindb.Language.English, genshindb.Language.French], resultLanguage: genshindb.Language.French }).name;
 			customImgUrl = await getByQuery(`SELECT "${charName}" FROM "enka" WHERE "giUID" = "${uid}"`);
 			if (customImgUrl && customImgUrl[charName]) {
@@ -265,7 +274,7 @@ async function getInfo(uid, interaction) {
 
 function makeEmbed(infos, uid, color, img, footer) {
 	const time = timeFormat(infos.timetaken);
-	const embed = new MessageEmbed()
+	const embed = new EmbedBuilder()
 		.setTitle(`${infos.username} (UID : ${uid})`)
 		.setURL("https://enka.shinshin.moe/u/" + uid)
 		.setDescription(infos.ARWL + '\n\n' + (infos.signature != '' ? infos.signature + '\n\nFait en : ' + `${time[0]} min ${time[1]} sec` : 'Fait en : ' + `${time[0]} min ${time[1]} sec`))
@@ -285,7 +294,7 @@ function chunkMaxLength(arr, chunkSize, maxLength) {
 function allImgEmbed(images, url) {
 	const embeds = [];
 	for (const image of images) {
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor("#2f3136")
 			.setURL(url)
 			.setImage(`attachment://${image.name}`)
@@ -302,22 +311,26 @@ module.exports = {
 			.setName("uid")
 			.setDescription("User ID")
 			.setRequired(false)),
+	/**
+	 * 
+	 * @param {import("discord.js").CommandInteraction} interaction
+	 */
 	async execute(interaction) {
 		let uid = interaction.options.getString("uid");
 
-		const row = new MessageActionRow()
+		const row = new ActionRowBuilder()
 			.addComponents(
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('prev')
-					.setStyle('SECONDARY')
+					.setStyle(ButtonStyle.Secondary)
 					.setEmoji('◀️'),
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('next')
-					.setStyle('SECONDARY')
+					.setStyle(ButtonStyle.Secondary)
 					.setEmoji('▶️'),
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId('getimgs')
-					.setStyle('SECONDARY')
+					.setStyle(ButtonStyle.Secondary)
 					.setLabel('Images')
 			);
 
@@ -328,7 +341,7 @@ module.exports = {
 			if (!uid) {
 				return interaction.editReply({
 					embeds: [
-						new MessageEmbed().setColor("RED").setDescription("Veuillez donner un UID ou lier votre uid Genshin avec `/enkalink`")
+						new EmbedBuilder().setColor(Colors.Red).setDescription("Veuillez donner un UID ou lier votre uid Genshin avec `/enkalink`")
 					]
 				});
 			}
@@ -341,7 +354,7 @@ module.exports = {
 		let index = 0;
 		const files = [];
 		for (const [index, image] of infos.images.entries()) {
-			const file = new MessageAttachment(Buffer.from(image), `${uid}_${index}.png`,);
+			const file = new AttachmentBuilder(Buffer.from(image), { name: `${uid}_${index}.png`},);
 			files.push(file);
 		}
 
