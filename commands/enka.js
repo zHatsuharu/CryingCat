@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, Colors, ButtonStyle } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, Colors, ButtonStyle, ComponentType } = require("discord.js");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const https = require("https");
@@ -362,7 +362,7 @@ module.exports = {
 			.then(message => {
 				function nav() {
 					const filter = (i) => i.user.id === interaction.user.id;
-					const collector = message.createMessageComponentCollector({ componentType: 'BUTTON', max: 1, time: 60000 });
+					const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, max: 1, time: 60000 });
 
 					collector.on('end', async collected => {
 						collected = collected.first();

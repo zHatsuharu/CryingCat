@@ -1,14 +1,14 @@
-const { Permissions, MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const generateUniqueId = require("generate-unique-id");
 
 function ticketEmbed(object, text, id, user) {
-	const embed = new MessageEmbed()
+	const embed = new EmbedBuilder()
 		.setAuthor({
 			name: user.tag + ' ▴ ticket-' + id,
 			iconURL: user.displayAvatarURL({ dynamic: true })
 		})
 		.setTitle(object)
-		.setColor("#2f3136")
+		.setColor(0x2f3136)
 		.setDescription(text);
 
 	return embed;
@@ -16,6 +16,10 @@ function ticketEmbed(object, text, id, user) {
 
 module.exports = {
 	name: 'interactionCreate',
+	/**
+	 * 
+	 * @param {import("discord.js").ModalSubmitInteraction} interaction 
+	 */
 	async execute(interaction) {
 		if (!interaction.isModalSubmit()) return;
 		if (interaction.customId == "modalTicket") {
@@ -24,26 +28,27 @@ module.exports = {
 
 			const id = generateUniqueId({ useLetters: false, length: 8 });
 
-			const ticketChan = await (await interaction.guild.channels.fetch("993962837749792768")).createChannel('ticket-' + id, {
+			const ticketChan = await (await interaction.guild.channels.fetch("993962837749792768")).children.create({
+				name: 'ticket-' + id,
 				permissionOverwrites: [
 					{
 						id: interaction.user.id,
-						allow: [Permissions.FLAGS.VIEW_CHANNEL]
+						allow: [PermissionsBitField.Flags.ViewChannel]
 					},
 					{
 						id: interaction.guild.roles.everyone.id,
-						deny: [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.CREATE_PRIVATE_THREADS, Permissions.FLAGS.CREATE_PUBLIC_THREADS]
+						deny: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.CreatePrivateThreads, PermissionsBitField.Flags.CreatePublicThreads]
 					}
 				]
 			});
 
 			await interaction.reply({ content: `Votre ticket est ouvert dans le salon ${ticketChan} !`, ephemeral: true });
 
-			const row = new MessageActionRow()
+			const row = new ActionRowBuilder()
 				.addComponents(
-					new MessageButton()
+					new ButtonBuilder()
 						.setCustomId('closeTicket')
-						.setStyle('DANGER')
+						.setStyle(ButtonStyle.Danger)
 						.setLabel('Fermer le ticket')
 				);
 

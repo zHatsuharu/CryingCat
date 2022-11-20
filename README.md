@@ -5,10 +5,10 @@ eh, well, it's a discord bot working with node js .
 This bot is only for 1 guild (1 discord server).
 
 # To Do
-- [ ] Upgrade Discord V14
+- [x] Upgrade Discord V14 `⚠️ May not be 100% done !`
 	- [x] Fix a big part of enka
-	- [ ] Upgrade tickets interactions
-	- [ ] Make reaction roles working
+	- [x] Upgrade tickets interactions
+	- [x] Make reaction roles working
 - [ ] Fix Enka command
 	- [x] Fix all ember builder
 	- [x] Fix Attachment

@@ -1,17 +1,17 @@
-const { Permissions, MessageEmbed } = require("discord.js");
+const { PermissionsBitField, EmbedBuilder, Colors } = require("discord.js");
 
 module.exports = {
 	name: 'interactionCreate',
 	async execute(interaction) {
 		if (!interaction.isButton()) return;
 		if (interaction.customId == "stopTicket") {
-            if (interaction.memberPermissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+            if (interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator)) {
                 interaction.message.edit({ components: [] });
                 interaction.deferUpdate();
                 
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
 				.setDescription(`Le ticket a définitivement été clôturé par ${interaction.user}.`)
-				.setColor("DARK_RED")
+				.setColor(Colors.DarkRed)
                 
                 interaction.channel.send({ embeds: [embed] });
             } else {
