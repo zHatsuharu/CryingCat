@@ -18,6 +18,25 @@ query += ")";
 
 db.run(query);
 
+// Check if every characters are in the table
+
+query = `SELECT name FROM pragma_table_info('enka');`;
+
+db.all(query, (err, rows) => {
+	if (err) return console.error(err);
+	for (let i = 0; i < 3; i++) rows.shift();
+	const sqlNames = new Array();
+	for (const { name } of rows) sqlNames.push(name);
+	const diff = genshinChars.filter(name => !sqlNames.includes(name));
+	console.log(diff);
+	if (diff.length != 0) {
+		for (const name of diff) {
+			query = `ALTER TABLE enka ADD '${name}' TEXT`;
+			db.run(query);
+		}
+	}
+});
+
 query = `CREATE TABLE IF NOT EXISTS twitchServers (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     serverID VARCHAR(255),
