@@ -16,7 +16,11 @@ This bot is only for 1 guild (1 discord server).
 - [ ] Upgrade Enka command
 - [ ] Twitch notification
 	- [x] Twitch main command handler
-	- [ ] Twitch init
+	- [x] Twitch init
 	- [ ] Twitch link
+		- [ ] Check if user exists
+		- [ ] Check if url already in db
+		- [x] Insert db
+	- [ ] Init stream listening on run
 - [ ] Twitter follow
 - [ ] Dashy board ?
