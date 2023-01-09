@@ -22,7 +22,8 @@ const typeObject = {
 	"Ice": "#B9EFEF",
 	"Electric": "#BD84E0",
 	"Fire": "#FEA76E",
-	"Water": "#08E4FE"
+	"Water": "#08E4FE",
+	"Grass": "#A5C83B"
 };
 
 const emote = "<a:loading:985185838432399360>";
@@ -219,7 +220,6 @@ async function getInfo(uid, interaction) {
 			await button.click();
 			await page.waitForFunction('document.querySelector(\'div[class^="DraggableCanvas"][class$="loader"]\') === null');
 			charName = await page.evaluate('document.querySelector(\'div[class^="name"]\').innerText');
-			console.log(charName.match(/^(\w|\s(?:\w))+/i)[0]);
 			charName = genshindb.characters(charName.match(/^(\w|\s(?:\w))+/i)[0], { queryLanguages: [genshindb.Language.English, genshindb.Language.French], resultLanguage: genshindb.Language.French }).name;
 			customImgUrl = await getByQuery(`SELECT "${charName}" FROM "enka" WHERE "giUID" = "${uid}"`);
 			if (customImgUrl && customImgUrl[charName]) {
@@ -360,7 +360,7 @@ module.exports = {
 
 		interaction.editReply({ embeds: [makeEmbed(infos, uid, typeObject[infos.types[index]], files[index], `${index + 1}/${files.length}`)], files: [files[index]], components: [row] })
 			.then(message => {
-				function nav() {
+				(function nav() {
 					const filter = (i) => i.user.id === interaction.user.id;
 					const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, max: 1, time: 60000 });
 
@@ -378,7 +378,8 @@ module.exports = {
 								const imageSet = chunkMaxLength(files, 4, 2);
 								let embeds = [];
 								for (const [index, set] of imageSet.entries()) {
-									index == 0 ? embeds.push(allImgEmbed(set, 'https://discord.com'))
+									index == 0
+										? embeds.push(allImgEmbed(set, 'https://discord.com'))
 										: embeds.push(allImgEmbed(set, 'https://discord.js.org'));
 								}
 								await collected.deferReply({ ephemeral: true });
@@ -396,11 +397,9 @@ module.exports = {
 							embeds: [makeEmbed(infos, uid, typeObject[infos.types[index]], files[index], `${index + 1}/${files.length}`)],
 							files: [files[index]],
 							components: collected.message.components
-						})
-							.then(() => nav());
+						}).then(() => nav());
 					});
-				}
-				nav();
+				})();
 			});
 	}
 }
